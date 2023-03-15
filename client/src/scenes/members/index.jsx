@@ -1,52 +1,63 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, useTheme } from "@mui/material";
-import { useGetUserPerformanceQuery } from "state/api";
-import { useSelector } from "react-redux";
 import { DataGrid } from "@mui/x-data-grid";
+import { useParams } from "react-router-dom";
 import Header from "components/Header";
 import CustomColumnMenu from "components/DataGridCustomColumnMenu";
 
-const Performance = () => {
+const Members = () => {
   const theme = useTheme();
-  const userId = useSelector((state) => state.global.userId);
-  const { data, isLoading } = useGetUserPerformanceQuery(userId);
+  const [isLoading, setIsLoading] = useState(true);
+  const [members, setMembers] = useState([]);
+  const { id } = useParams();
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/admin/user-members/${id}`);
+        const data = await response.json();
+        const membersWithId = data.members.map((member, index) => ({ ...member, id: index + 1 }));
+        setMembers(membersWithId);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const columns = [
     {
-      field: "_id",
-      headerName: "ID",
-      flex: 1,
+      field: "Firstname",
+      headerName: "First Name",
+      width: 500
     },
     {
-      field: "userId",
-      headerName: "User ID",
-      flex: 1,
+      field: "Lastname",
+      headerName: "Last Name",
+      width: 350
     },
     {
-      field: "createdAt",
-      headerName: "CreatedAt",
-      flex: 1,
+      field: "Age",
+      headerName: "Age",
+      width: 200
     },
     {
-      field: "products",
-      headerName: "# of Products",
-      flex: 0.5,
-      sortable: false,
-      renderCell: (params) => params.value.length,
-    },
-    {
-      field: "cost",
-      headerName: "Cost",
-      flex: 1,
-      renderCell: (params) => `$${Number(params.value).toFixed(2)}`,
-    },
+      field: "Gender",
+      headerName: "Gender",
+      width: 150
+    }
   ];
 
   return (
     <Box m="1.5rem 2.5rem">
       <Header
-        title="PERFORMANCE"
-        subtitle="Track your Affiliate Sales Performance Here"
+        title="MEMBER DETAILS"
+        subtitle="Track your member's details here"
       />
       <Box
         mt="40px"
@@ -77,9 +88,8 @@ const Performance = () => {
         }}
       >
         <DataGrid
-          loading={isLoading || !data}
-          getRowId={(row) => row._id}
-          rows={(data && data.sales) || []}
+          loading={isLoading}
+          rows={members}
           columns={columns}
           components={{
             ColumnMenu: CustomColumnMenu,
@@ -90,4 +100,5 @@ const Performance = () => {
   );
 };
 
-export default Performance;
+export default Members;
+
