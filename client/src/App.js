@@ -10,13 +10,13 @@ import Families from "scenes/families";
 import Customers from "scenes/customers";
 import Transactions from "scenes/prayer";
 
-import Overview from "scenes/overview";
 import Prayer from "scenes/prayer";
 import Breakdown from "scenes/families";
 import Admin from "scenes/admin";
 import Members from "scenes/members";
 import Message from "scenes/message";
 import Gallery from "scenes/gallery";
+import Addimage from "scenes/addimage";
 
 function App() {
   const mode = useSelector((state) => state.global.mode);
@@ -34,7 +34,7 @@ function App() {
               <Route path="/customers" element={<Customers />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/gallery" element={<Gallery />} />
-              <Route path="/overview" element={<Overview />} />
+              <Route path="/addimage" element={<Addimage/>} />
               <Route path="/prayertime" element={<Prayer />} />
               <Route path="/messages" element={<Message />} />
               <Route path="/breakdown" element={<Breakdown />} />

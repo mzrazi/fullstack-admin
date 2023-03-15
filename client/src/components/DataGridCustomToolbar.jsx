@@ -14,9 +14,9 @@ const DataGridCustomToolbar = ({ searchInput, setSearchInput, setSearch }) => {
     <GridToolbarContainer>
       <FlexBetween width="100%">
         <FlexBetween>
-          <GridToolbarColumnsButton />
-          <GridToolbarDensitySelector />
-          <GridToolbarExport />
+          {/* <GridToolbarColumnsButton />
+          <GridToolbarDensitySelector /> */}
+          {/* <GridToolbarExport /> */}
         </FlexBetween>
         <TextField
           label="Search..."
