@@ -1,12 +1,15 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useSelector} from "react-redux";
 import { BrowserRouter, Navigate, Route, Outlet, Routes } from "react-router-dom";
 import { themeSettings } from "theme";
 import Layout from "scenes/layout";
 import Dashboard from "scenes/dashboard";
 import Families from "scenes/families";
+import { useState,useEffect } from "react";
+import jwt_decode from "jwt-decode"
+import Navbar from "components/Navbar";
 
 
 import Prayer from "scenes/prayer";
@@ -20,27 +23,68 @@ import Events from "scenes/events";
 import AddEvents from "scenes/addevents";
 import Login from "scenes/login/login";
 
+
 function App() {
   const mode = useSelector((state) => state.global.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
+ const [isAuthenticated, setIsAuthenticated] = useState(true);
 
-  const PrivateRoutes = () => {
+
+
+  console.log("done"+localStorage.token);
+  useEffect(() => {
     const token = localStorage.getItem('token');
+    const expirationTime = localStorage.getItem('expirationTime');
+
+    console.log(token);
+    console.log(expirationTime);
+    if (token && expirationTime) {
+      const decodedToken = jwt_decode(token);
+      const currentTime = new Date().getTime() / 1000;
+      if (decodedToken.exp > currentTime) {
+        setIsAuthenticated(true);
+      } else {
+        console.log("called");
+        setIsAuthenticated(false);
+        localStorage.removeItem('token');
+        localStorage.removeItem('expirationTime');
+      }
+    } else {
+      setIsAuthenticated(false);
+      console.log("else");
+    }
+  }, []);
+
+  
+ 
+  const PrivateRoutes = () => {
+   console.log("state"+ isAuthenticated);
   return (
-    token ? <Outlet/> : <Navigate to='/login'/>
+    isAuthenticated ? <Outlet/> : <Navigate to='/login'/>
   )
+  }
+
+  const HandleLogout = () => {
+    // clear authentication state
+    localStorage.removeItem("token");
+    localStorage.removeItem("expirationTime");
+    setIsAuthenticated(false);
+    console.log("set false");
   }
 
 
   return (
     <div className="app">
+    
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <CssBaseline />
         <Routes>
-          <Route element={<Layout />}>
+         
+          <Route element={<Layout handlelogout={HandleLogout}/>}>
               <Route element={<PrivateRoutes />}>
+                
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/families" element={<Families />} />
                 <Route path="/addevents" element={<AddEvents />} />
@@ -56,11 +100,15 @@ function App() {
               </Route>
             
           </Route>
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} isAuthenticated={isAuthenticated}/>} />
         </Routes>
         </ThemeProvider>
       </BrowserRouter>
+     
+      
     </div>
+
+    
   );
 }
 

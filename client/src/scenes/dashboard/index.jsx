@@ -16,7 +16,7 @@ import StatBox from "components/StatBox";
 const Dashboard = () => {
   const theme = useTheme();
   const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
-  const { data, isLoading } = useGetDashboardQuery();
+  
 
   return (
     <Box m="1.5rem 2.5rem">
@@ -38,7 +38,7 @@ const Dashboard = () => {
         {/* ROW 1 */}
         <StatBox
           title="Total users"
-          value={data && data.totalCustomers}
+          value=""
           
           
           icon={
@@ -49,7 +49,7 @@ const Dashboard = () => {
         />
         <StatBox
           title="Total families"
-          value={data && data.todayStats.totalSales}
+          value=""
          
           icon={
             <Diversity1Outlined
@@ -57,6 +57,9 @@ const Dashboard = () => {
             />
           }
         />
+
+
+        
      
      
      

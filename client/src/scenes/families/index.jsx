@@ -85,7 +85,7 @@ const Families = () => {
 
   return (
     
-    <div style={{ height: 600, width: "98%",marginLeft:"10px" }}>
+    <div style={{ height: 600, width: "98%",marginLeft:"20px" }}>
       <DataGrid
   rows={searchedUsers}
   columns={columns}

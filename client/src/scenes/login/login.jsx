@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
+import jwt_decode from "jwt-decode"
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
-export default function Login() {
+export default function Login({ setIsAuthenticated, isAuthenticated }){
   const [error, setError] = useState("");
   const Navigate = useNavigate();
 
@@ -31,9 +31,18 @@ export default function Login() {
         body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
-      if (response.status) {
-        localStorage.setItem("token", data.token);
-        Navigate("/dashboard");
+      if (data.status) {
+        const token = data.token;
+        const decodedToken = jwt_decode(token);
+        if (decodedToken && decodedToken.exp > Date.now() / 1000) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("expirationTime",decodedToken.exp)
+          setIsAuthenticated(true);
+        
+          Navigate("/dashboard");
+        } else {
+          setError("Invalid token or token has expired.");
+        }
       } else {
         setError(data.message);
       }
@@ -42,7 +51,7 @@ export default function Login() {
       setError("An error occurred. Please try again later.");
     }
   };
-
+  
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
